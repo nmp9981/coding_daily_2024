@@ -2,16 +2,13 @@
 #include <cmath>
 using namespace std;
 
-int n;
-const double Gravity = 9.81;
-const double MaxDist = 1501;
-const double Upsilon = 1e-6;
-const double PI = 3.141592;
+#define Gravity 9.81
+#define PI 3.141592
+#define Upsilon 1e-6
+#define MaxDist 1501 
 
-//초기 속도
-double InitVelocity(double height){
-    return sqrt(2*height*Gravity);
-}
+int n;
+
 //언덕 함수
 double Hill(double x,double H,double L){
     if(x<0.0) return H;
@@ -63,7 +60,7 @@ double SetDown_XPos(double v0,double p,double H,double L){
 //스키 점프
 void SkiJump(double j,double p,double H,double L){
     //초기 속도
-    double v0 = InitVelocity(j);
+    double v0 = sqrt(2*j*Gravity);
     
     //착륙 위치
     double arriveX = SetDown_XPos(v0,p,H,L);
