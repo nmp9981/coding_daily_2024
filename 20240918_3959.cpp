@@ -5,8 +5,8 @@ using namespace std;
 int n;
 const double Gravity = 9.81;
 const double MaxDist = 1501;
-const double Upsilon = 1e-9;
-const double PI = 3.141592653;
+const double Upsilon = 1e-6;
+const double PI = 3.141592;
 
 //초기 속도
 double InitVelocity(double height){
