@@ -5,20 +5,26 @@ using UnityEngine.UI;
 
 public class ColorPicker : MonoBehaviour
 {
-    public Image circlePalette;
-    public Image picker;
+    [SerializeField]
+    Image circlePalette;
+    [SerializeField]
+    Image picker;
+    [SerializeField]
+    Camera mainCam;
     public Color selectedColor;
     public GameObject linkedObject;
 
     private Vector2 sizeOfPalette;
     private CircleCollider2D paletteCollider;
+    public Slider[] colorSlider = new Slider[3];
 
-    private static CircleColorPicker instance = null;
-    public static CircleColorPicker Instance
+
+    private static ColorPicker instance = null;
+    public static ColorPicker Instance
     {
         get
         {
-            if (null == instance) instance = FindObjectOfType<CircleColorPicker>();
+            if (null == instance) instance = FindObjectOfType<ColorPicker>();
             return instance;
         }
     }
@@ -30,13 +36,13 @@ public class ColorPicker : MonoBehaviour
 
     void Start()
     {
-        this.gameObject.SetActive(false);
-
+        
         paletteCollider = circlePalette.GetComponent<CircleCollider2D>();
 
         sizeOfPalette = new Vector2(
             circlePalette.GetComponent<RectTransform>().rect.width,
             circlePalette.GetComponent<RectTransform>().rect.height);
+
     }
 
     public void mousePointerDown()
@@ -49,7 +55,7 @@ public class ColorPicker : MonoBehaviour
         selectColor();
     }
 
-    private Color getColor()
+    public Color getColor()
     {
         Vector2 circlePalettePosition = circlePalette.transform.position;
         Vector2 pickerPosition = picker.transform.position;
@@ -74,6 +80,18 @@ public class ColorPicker : MonoBehaviour
 
         selectedColor = getColor();
 
-        linkedObject.GetComponent<MeshRenderer>().materials[0].color = selectedColor;
+        mainCam.backgroundColor = selectedColor;
+        SettingColorSlider(selectedColor);
+        //linkedObject.GetComponent<MeshRenderer>().materials[0].color = selectedColor;
+    }
+    /// <summary>
+    /// 기능 : 슬라이더 바인딩
+    /// </summary>
+    /// <param name="selectedColor"></param>
+    void SettingColorSlider(Color selectedColor)
+    {
+        colorSlider[0].value = selectedColor.r * 255f;
+        colorSlider[1].value = selectedColor.g * 255f;
+        colorSlider[2].value = selectedColor.b * 255f;
     }
 }
