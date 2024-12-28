@@ -16,8 +16,11 @@ public class ColorPicker : MonoBehaviour
 
     private Vector2 sizeOfPalette;
     private CircleCollider2D paletteCollider;
-    public Slider[] colorSlider = new Slider[3];
 
+    public Slider redSlider;
+    public Slider greenSlider;
+    public Slider blueSlider;
+    public Slider alphaSlider;
 
     private static ColorPicker instance = null;
     public static ColorPicker Instance
@@ -32,6 +35,21 @@ public class ColorPicker : MonoBehaviour
     private void Awake()
     {
         if (null == instance) instance = this;
+
+        if (redSlider == null || greenSlider == null ||
+            blueSlider == null || alphaSlider == null) return;
+
+        // 슬라이더 초기값 설정 (0~1 사이)
+        InitializeSlider(redSlider);
+        InitializeSlider(greenSlider);
+        InitializeSlider(blueSlider);
+        InitializeSlider(alphaSlider);
+
+        // 이벤트 리스너 등록
+        redSlider.onValueChanged.AddListener(UpdateBackgroundColor);
+        greenSlider.onValueChanged.AddListener(UpdateBackgroundColor);
+        blueSlider.onValueChanged.AddListener(UpdateBackgroundColor);
+        alphaSlider.onValueChanged.AddListener(UpdateBackgroundColor);
     }
 
     void Start()
@@ -54,7 +72,33 @@ public class ColorPicker : MonoBehaviour
     {
         selectColor();
     }
+    private void InitializeSlider(Slider slider)
+    {
+        slider.minValue = 0f;
+        slider.maxValue = 255f;
 
+        // 각 슬라이더의 초기값 설정
+        if (slider == redSlider)
+            slider.value = mainCam.backgroundColor.r * 255f;
+        else if (slider == greenSlider)
+            slider.value = mainCam.backgroundColor.g * 255f;
+        else if (slider == blueSlider)
+            slider.value = mainCam.backgroundColor.b * 255f;
+        else if (slider == alphaSlider)
+            slider.value = mainCam.backgroundColor.a * 255f;
+    }
+
+    private void UpdateBackgroundColor(float value)
+    {
+        // 각 슬라이더 값을 0-1 범위로 정규화하여 Color 생성
+        Color newColor = new Color(
+            redSlider.value / 255f,
+        greenSlider.value / 255f,
+            blueSlider.value / 255f,
+            alphaSlider.value / 255f
+        );
+        mainCam.backgroundColor = newColor;
+    }
     public Color getColor()
     {
         Vector2 circlePalettePosition = circlePalette.transform.position;
@@ -90,8 +134,9 @@ public class ColorPicker : MonoBehaviour
     /// <param name="selectedColor"></param>
     void SettingColorSlider(Color selectedColor)
     {
-        colorSlider[0].value = selectedColor.r * 255f;
-        colorSlider[1].value = selectedColor.g * 255f;
-        colorSlider[2].value = selectedColor.b * 255f;
+        redSlider.value = selectedColor.r * 255f;
+        greenSlider.value = selectedColor.g * 255f;
+        blueSlider.value = selectedColor.b * 255f;
+        alphaSlider.value = selectedColor.a * 255f;
     }
 }
