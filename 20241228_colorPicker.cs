@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,6 +22,11 @@ public class ColorPicker : MonoBehaviour
     public Slider greenSlider;
     public Slider blueSlider;
     public Slider alphaSlider;
+
+    public TextMeshProUGUI redValue;
+    public TextMeshProUGUI greenValue;
+    public TextMeshProUGUI blueValue;
+    public TextMeshProUGUI alphaValue;
 
     private static ColorPicker instance = null;
     public static ColorPicker Instance
@@ -79,13 +85,25 @@ public class ColorPicker : MonoBehaviour
 
         // 각 슬라이더의 초기값 설정
         if (slider == redSlider)
-            slider.value = mainCam.backgroundColor.r * 255f;
+        {
+            slider.value = linkedObject.GetComponent<SpriteRenderer>().materials[0].color.r * 255f;
+            redValue.text = slider.value.ToString();
+        }
         else if (slider == greenSlider)
-            slider.value = mainCam.backgroundColor.g * 255f;
+        {
+            slider.value = linkedObject.GetComponent<SpriteRenderer>().materials[0].color.g * 255f;
+            greenValue.text = slider.value.ToString();
+        }
         else if (slider == blueSlider)
-            slider.value = mainCam.backgroundColor.b * 255f;
+        {
+            slider.value = linkedObject.GetComponent<SpriteRenderer>().materials[0].color.b * 255f;
+            blueValue.text = slider.value.ToString();
+        }
         else if (slider == alphaSlider)
-            slider.value = mainCam.backgroundColor.a * 255f;
+        {
+            slider.value = linkedObject.GetComponent<SpriteRenderer>().materials[0].color.a * 255f;
+            alphaValue.text = slider.value.ToString();
+        }
     }
 
     private void UpdateBackgroundColor(float value)
@@ -97,7 +115,14 @@ public class ColorPicker : MonoBehaviour
             blueSlider.value / 255f,
             alphaSlider.value / 255f
         );
-        mainCam.backgroundColor = newColor;
+
+        //RGB값 텍스트
+        redValue.text = ((int)redSlider.value).ToString();
+        greenValue.text = ((int)greenSlider.value).ToString();
+        blueValue.text = ((int)blueSlider.value).ToString();
+        alphaValue.text = ((int)alphaSlider.value).ToString();
+
+        linkedObject.GetComponent<SpriteRenderer>().material.color = newColor;
     }
     public Color getColor()
     {
@@ -124,9 +149,9 @@ public class ColorPicker : MonoBehaviour
 
         selectedColor = getColor();
 
-        mainCam.backgroundColor = selectedColor;
+        //mainCam.backgroundColor = selectedColor;
         SettingColorSlider(selectedColor);
-        //linkedObject.GetComponent<MeshRenderer>().materials[0].color = selectedColor;
+        linkedObject.GetComponent<SpriteRenderer>().materials[0].color = selectedColor;
     }
     /// <summary>
     /// 기능 : 슬라이더 바인딩
