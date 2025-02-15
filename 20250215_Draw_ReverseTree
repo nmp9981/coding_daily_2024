@@ -1,0 +1,85 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class MyLSystem : MonoBehaviour
+{
+    [SerializeField] Color color = Color.black;
+    [SerializeField, Range(1, 8)] protected int depth = 5;//세대
+    [SerializeField, Range(0.2f, 5f)] protected float length = 2f;//나뭇가지 길이
+    [SerializeField, Range(0.5f, 0.98f)] protected float attenuation = 0.7f;//길이 공비
+    [SerializeField, Range(0f, 90f)] protected float angle = 45f;//회전 각도
+
+    Material lineMat;
+
+    /// <summary>
+    /// 쉐이더, 머테리얼 등록
+    /// </summary>
+    void OnEnable()
+    {
+        var shader = Shader.Find("Hidden/Internal-Colored");
+        if (shader == null)
+        {
+            Debug.LogWarning("Shader Hidden/Internal-Colored not found");
+        }
+        lineMat = new Material(shader);
+    }
+
+
+    /// <summary>
+    /// 그리기
+    /// </summary>
+    /// <param name="depth">세대</param>
+    /// <param name="length">가지 길이</param>
+    void DrawLSystem(int depth, float length)
+    {
+        //선 색상 설정
+        lineMat.SetColor("_Color", color);
+        //GL을 그리기 위해 아래 코드를 실행해야함
+        lineMat.SetPass(0);
+
+        //프랙탈 그리기
+        DrawFractal(transform.localToWorldMatrix, depth, length);
+    }
+
+    /// <summary>
+    /// 프랙탈 그리기
+    /// 
+    /// </summary>
+    /// <param name="current"></param>
+    /// <param name="depth"></param>
+    /// <param name="length"></param>
+    void DrawFractal(Matrix4x4 current, int depth, float length)
+    {
+        //현재세대가 0이면 종료
+        if (depth <= 0)
+        {
+            return;
+        }
+
+        //찐 그리기
+        GL.MultMatrix(current);//모델 행렬을 지정 행렬로 설정
+        GL.Begin(GL.LINES);//렌더링 모드 시작, GL.LINES : 선을 그림
+        GL.Vertex(Vector3.zero);
+        GL.Vertex(new Vector3(0f, -length, 0f));//길이 만큼 렌더링
+        GL.End();//렌더링 작업 종료
+
+        GL.PushMatrix();
+        //위치, 화전, 크기
+        //오른쪽
+        GL.PushMatrix();
+        Matrix4x4 next1 = current * Matrix4x4.TRS(new Vector3(0f, -length, 0f), Quaternion.AngleAxis(angle, Vector3.forward), Vector3.one);
+        DrawFractal(next1, depth - 1, length);
+        GL.PopMatrix();
+
+        GL.PushMatrix();
+        Matrix4x4 next2 = current * Matrix4x4.TRS(new Vector3(0f, -length, 0f), Quaternion.AngleAxis(-angle, Vector3.forward), Vector3.one);
+        DrawFractal(next2, depth - 1, length);
+        GL.PopMatrix();
+    }
+
+    private void OnRenderObject()
+    {
+        DrawLSystem(depth, length);
+    }
+}
