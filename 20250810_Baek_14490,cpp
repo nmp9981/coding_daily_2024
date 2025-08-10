@@ -1,0 +1,47 @@
+#include <iostream>
+using namespace std;
+
+int n,cnt;
+
+//입력
+void Input(){
+    cin>>n;
+}
+
+//3의 배수 검사
+bool CheckMulti3(string s){
+    //자릿수 합
+    int digitSum = 0;
+    for(int i=0;i<s.size();i++){
+        digitSum+=(s[i]-'0');
+    }
+    
+    //3의 배수 검사
+    if(digitSum%3==0) return true;
+    return false;
+}
+
+//3의 배수 만들기
+void Make3(string s){
+    if(s.size()==n){
+        //맨 앞자리가 0인지 검사
+        if(s[0]=='0') return;
+        //3의 배수 검사
+        if(CheckMulti3(s)) cnt++;
+        return;
+    }
+    
+    for(int i=0;i<3;i++){
+        //다음 수
+        string nextString = s+to_string(i);
+        Make3(nextString);
+    }
+}
+
+int main()
+{
+    Input();
+    Make3("");
+    cout<<cnt;
+    return 0;
+}
