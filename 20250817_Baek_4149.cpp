@@ -101,6 +101,7 @@ ll PollarRhoFunction(__int128 N)
             x = ((x * x% N) + c + N) % N;
             y = ((y * y% N) + c + N) % N;
             y = ((y * y% N) + c + N) % N;
+            //if (y > x) swap(x, y); 시간 초과 원인
             d = GCD(abs(x - y), N);
         }
     } while (d == N); // d가 N이면 다시 루프를 반복
