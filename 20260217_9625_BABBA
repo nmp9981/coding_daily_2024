@@ -1,0 +1,22 @@
+#include <iostream>
+using namespace std;
+
+int k;
+const int maxi = 46;
+int pibonacci[maxi];
+
+void Pibo(){
+    pibonacci[0] = 0;
+    pibonacci[1] = 1;
+    for(int i=2;i<maxi;i++){
+        pibonacci[i] = pibonacci[i-1]+pibonacci[i-2];
+    }
+}
+
+int main()
+{
+    cin>>k;
+    Pibo();
+    cout<<pibonacci[k-1]<<" "<<pibonacci[k];
+    return 0;
+}
