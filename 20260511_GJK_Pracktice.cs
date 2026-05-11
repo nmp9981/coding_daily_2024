@@ -45,7 +45,7 @@ namespace Practice
                 //원점과 비교하니까 벡터op 기준
                 //Dir방향으로 점 p를 투영->내적 사용
                 //내적값이 0미만 -> 그 방향으론 원점 포함을 안함 -> 서로 충돌하지 않음
-                Vector3 po = new Vector3(-p.x, -p.y, 0);
+                Vector3 po = new Vector3(p.x, p.y, 0);
                 if (po.x * dir.x + po.y * dir.y <= 0)
                 {
                     return false;
@@ -55,12 +55,29 @@ namespace Practice
                 if(IsInTriangle(p1,p2, p))
                 {
                     //EPA 알고리즘
-                    triangleList.Add(p);
+                    triangleList = new List<Point>{p1,p2,p};
                     return true;
                 }
-                else//a,b중 하나 제거
+                else//p1,p2중 원점에서 먼 점을 버린다.
                 {
+                    //새로운 삼각형
+                    Vector3 pp1 = new Vector3(p1.x - p.x, p1.y - p.y, 0);   // p → p1
+                    Vector3 pp2 = new Vector3(p2.x - p.x, p2.y - p.y, 0);   // p → p2
 
+                    //p1p, pp2를 dir에 투영
+                    Vector3 ppNormal = Vector3.Cross(Vector3.Cross(pp2, pp1), pp1);
+                    Vector3 poo = new Vector3(-p.x, -p.y, 0);
+                    float ppDot = ppNormal.x*poo.x+ ppNormal.y*poo.y;
+                    if (ppDot>0)//더 작은 값을 날림
+                    {
+                        p2 = p;
+                        dir = Vertical_AOToLineAB(p, p1);
+                    }
+                    else
+                    {
+                        p1 = p;
+                        dir = Vertical_AOToLineAB(p2, p);
+                    }
                 }
             }
             return false;
@@ -73,11 +90,11 @@ namespace Practice
         Point Support(List<Point> shapeA, List<Point> shapeB, Vector3 dir)
         {
             //도형 A,B에서 dir방향으로 가장 멀리 있는점
-            Point FatAPoint = FarthestInDirection(shapeA, dir);
+            Point FarAPoint = FarthestInDirection(shapeA, dir);
             Point FarBPoint = FarthestInDirection(shapeB, dir);
 
-            //민코브스키 차
-            Point mincovDiff = new Point(FarBPoint.x-FarBPoint.x,FarBPoint.y-FarBPoint.y);
+            //민코브스키 차, B-A
+            Point mincovDiff = new Point(FarBPoint.x-FarAPoint.x,FarBPoint.y-FarAPoint.y);
             return mincovDiff;
         }
 
@@ -101,6 +118,7 @@ namespace Practice
                 if (curDot > dotValue)
                 {
                     dotValue = curDot;
+                    farPoint = p;
                 }
             }
             return farPoint;
@@ -120,11 +138,11 @@ namespace Practice
             Vector2 oc = new Vector2(-c.x,-c.y); 
 
             //외적값이 전부 같은 부호이면 된다.
-            if(CrossVec2D(oa, ob)>=0 && CrossVec2D(ob, oc) >= 0 && CrossVec2D(oa, oc) >= 0)
+            if(CrossVec2D(oa, ob)>=0 && CrossVec2D(ob, oc) >= 0 && CrossVec2D(oc, oa) >= 0)
             {
                 return true;
             }
-            if (CrossVec2D(oa, ob) <= 0 && CrossVec2D(ob, oc) <= 0 && CrossVec2D(oa, oc) <= 0)
+            if (CrossVec2D(oa, ob) <= 0 && CrossVec2D(ob, oc) <= 0 && CrossVec2D(oc, oa) <= 0)
             {
                 return true;
             }
