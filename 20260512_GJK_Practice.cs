@@ -18,9 +18,31 @@ namespace Practice
         public float distance;   // 원점에서 이 edge(직선)까지의 수직 거리
         public int index;        // polytope 리스트에서의 위치 (분할할 때 필요)
     }
-    public class GJKPractice
+    public class GJKPractice : MonoBehaviour
     {
-       
+        private void Start()
+        {
+            // 1만큼 겹침
+            var a1 = new List<Point> { new(0, 0), new(2, 0), new(2, 2), new(0, 2) };
+            var b1 = new List<Point> { new(1, 0), new(3, 0), new(3, 2), new(1, 2) };
+            Debug.Log($"겹침: {new GJKPractice().GJK_Flow(a1, b1)}");  // true
+
+            // 떨어짐
+            var a2 = new List<Point> { new(0, 0), new(1, 0), new(1, 1), new(0, 1) };
+            var b2 = new List<Point> { new(5, 5), new(6, 5), new(6, 6), new(5, 6) };
+            Debug.Log($"분리: {new GJKPractice().GJK_Flow(a2, b2)}");  // false
+
+            // 살짝 겹침 (0.5만큼 위로)
+            var a3 = new List<Point> { new(0, 0), new(2, 0), new(2, 2), new(0, 2) };
+            var b3 = new List<Point> { new(0, 1.5f), new(2, 1.5f), new(2, 3.5f), new(0, 3.5f) };
+            Debug.Log($"수직 겹침: {new GJKPractice().GJK_Flow(a3, b3)}");  // true
+
+            // 삼각형 vs 사각형
+            var a4 = new List<Point> { new(0, 0), new(3, 0), new(1.5f, 3) };
+            var b4 = new List<Point> { new(1, 1), new(4, 1), new(4, 4), new(1, 4) };
+            Debug.Log($"비대칭 겹침: {new GJKPractice().GJK_Flow(a4, b4)}");  // true
+        }
+
         public bool GJK_Flow(List<Point> shapeA, List<Point> shapeB)
         {
             //첫 두점 등록
@@ -41,7 +63,7 @@ namespace Practice
                 //충돌 X
                 Vector2 op = new Vector2(p.x,p.y);
                 float pDot = op.x * dir.x + op.y * dir.y;
-                if (pDot <= 0)
+                if (pDot < 0)
                 {
                     return false;
                 }
