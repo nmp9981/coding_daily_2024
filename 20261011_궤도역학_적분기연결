@@ -1,0 +1,35 @@
+using UnityEngine;
+using static IntegratorUtility;
+
+public class orbutTest : MonoBehaviour
+{
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        double Mu = 1.0;
+        AccelFunc twoBody = r => Gravity.TwoBody(r, Mu);
+        
+        var r0 = new Vector3D(1, 0, 0);
+        var v0 = new Vector3D(0, 1, 0);
+        double E0 = 0.5 * v0.SqrMagnitude() - Mu / r0.Magnitude();
+
+        int N = 100;
+        double T = 2*ConstUtility.PI;
+        double dt = T/N;
+        double maxDiff = 0;
+
+        for (int s = 1; s <= 10*N; s++)
+        {
+            VelocityVerlet(ref r0, ref v0, dt, twoBody);
+            double energy = 0.5 * v0.SqrMagnitude() - Mu / r0.Magnitude();
+            double diff = energy - E0;
+            maxDiff = MathUtility.Max(maxDiff, MathUtility.Abs(diff));
+
+            if (s % N == 0)
+            {
+                Debug.Log($"Energy : {maxDiff:E12}");
+                maxDiff = 0;
+            }
+        }
+    }
+}
